@@ -1,0 +1,17 @@
+Package: SoloGEx
+Type: Package
+Title: Solo Gene Expression Explorer for Hypothesis Generation
+Version: 0.1.0
+Authors@R: 
+    person("Stefan", "Lang", email = "stefan.lang@med.lu.se", role = c("aut", "cre"))
+Description: 
+    SoloGEx provides a minimal R framework to explore single-sample gene expression data 
+    against a reference dataset. It calculates per-group statistics, compares singleton 
+    samples, and generates hypothesis-driven insights. Designed for pilot studies and 
+    rapid exploratory analysis.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Imports: 
+    stats

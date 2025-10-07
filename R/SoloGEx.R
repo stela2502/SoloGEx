@@ -402,18 +402,26 @@ setMethod(
   # Loop through each singleton sample
   for (s in 1:n_samples) {
     min_z <- rep(Inf, n_genes)
-    min_group <- rep(NA, n_genes)
+    min_group <- rep(NA_character_, n_genes)
     
     # Compare to each reference group
     for (i in seq_along(group_names)) {
       g <- group_names[i]
-      mean_vals <- group_stats[, (i-1)*3 + 1]
-      sd_vals <- group_stats[, (i-1)*3 + 2]
       
+      # Extract mean and SD for this group
+      mean_vals <- group_stats[, (i-1)*3 + 1]
+      sd_vals   <- group_stats[, (i-1)*3 + 2]
+      
+      # Replace zero SDs with NA to avoid division by zero
+      sd_vals[sd_vals == 0] <- NA_real_
+      
+      # Compute z-scores
       z_tmp <- abs((single_expr[, s] - mean_vals) / sd_vals)
       
-      # Update minimum Z and closest group
+      # Update minimum Z and closest group safely
       update <- z_tmp < min_z
+      update[is.na(update)] <- FALSE  # skip positions where z_tmp is NA
+      
       min_z[update] <- z_tmp[update]
       min_group[update] <- g
     }
@@ -495,27 +503,31 @@ setMethod(
   function(edat) {
     # Start with expression matrix
     df <- as.data.frame(edat@expr)
-    
+
+    fc = compute_fc_pairwise( edat )
+    df = cbind ( df, fc )
+
     # Append group statistics if available
     if (!is.null(edat@group_stats)) {
       df <- cbind(df, as.data.frame(edat@group_stats))
     }
+
+    
     
     # Append singleton analysis if available
     if (!is.null(edat@singleton_analysis)) {
-      sa <- edat@singleton_analysis
+      # Z-scores
+      z_df <- as.data.frame(edat@singleton_analysis$z_scores)
+      colnames(z_df) <- paste0("Zscore_", colnames(edat@singleton_analysis$z_scores))
+
+      # Closest group
+      closest_group <- as.data.frame(edat@singleton_analysis$closest_group)
+      colnames(closest_group) <- paste0("closest_", colnames(edat@singleton_analysis$closest_group))
+
+      # Overall deviation
+      #overall_dev <- data.frame(overall_dev = edat@singleton_analysis$overall_dev)
       
-      # Split out Z-scores columns (all columns starting with "Z_")
-      z_cols <- grep("^Z_", colnames(sa), value = TRUE)
-      z_df <- sa[, z_cols, drop = FALSE]
-      
-      # Closest group column
-      closest_group <- sa[, "closest_group", drop = FALSE]
-      
-      # Overall deviation column
-      overall_dev <- sa[, "overall_dev", drop = FALSE]
-      
-      df <- cbind(df, z_df, closest_group, overall_dev)
+      df <- cbind(df, z_df, closest_group)
     }
     
     return(df)
@@ -569,9 +581,47 @@ setMethod(
     }
     
     combined <- export_combined(singleton)
-    write.table(combined, file = file, ..., row.names = TRUE)
+    combined = cbind(rownames( combined), combined )
+    colnames(combined)[1] = "GeneNames"
+    write.table(combined, file = file, ..., row.names = FALSE)
   }
   )
+
+
+# Internal helper: compute all pairwise log2 fold changes for singleton samples
+compute_fc_pairwise <- function(single_edat) {
+
+  single_expr <- single_edat@expr
+  n_genes <- nrow(single_expr)
+  n_samples <- ncol(single_expr)
+  sample_names <- colnames(single_expr)
+  
+  fc_list <- list()
+  
+  for (i in seq_len(n_samples - 1)) {
+    for (j in seq((i + 1), n_samples)) {
+      fc_name <- paste0("logFC_", sample_names[i], "_vs_", sample_names[j])
+      
+      # Extract the two columns
+      x <- single_expr[, i]
+      y <- single_expr[, j]
+      
+      # Initialize fold change vector with NAs
+      fc_vec <- rep(NA_real_, n_genes)
+      
+      # Compute log2 fold change only where valid (non-NA and denominator != 0)
+      valid <- !is.na(x) & !is.na(y) & y != 0
+      fc_vec[valid] <- log2(x[valid] / y[valid])
+      
+      # Assign to list
+      fc_list[[fc_name]] <- fc_vec
+    }
+  }
+  
+  # Combine into a data.frame with genes as rows
+  fc_df <- as.data.frame(fc_list, row.names = rownames(single_expr))
+  return(fc_df)
+}
 
 ################################################################################
 # USAGE EXAMPLE

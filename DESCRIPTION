@@ -9,9 +9,11 @@ Description:
     against a reference dataset. It calculates per-group statistics, compares singleton 
     samples, and generates hypothesis-driven insights. Designed for pilot studies and 
     rapid exploratory analysis.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.1
 Imports: 
-    stats
+    stats,
+    methods,
+    utils

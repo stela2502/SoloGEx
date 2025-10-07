@@ -3,15 +3,55 @@
 \docType{class}
 \name{SoloGEx-class}
 \alias{SoloGEx-class}
-\title{SoloGEx constructor}
-\arguments{
-\item{expr}{numeric matrix of expression values (genes x samples)}
-
-\item{colData}{data.frame with sample metadata (rows = samples)}
-}
-\value{
-SoloGEx S4 object
-}
+\title{SoloGEx S4 Class for Gene Expression Analysis}
 \description{
-SoloGEx constructor
+The `SoloGEx` class is a minimal framework for storing gene expression data
+along with sample metadata. It supports calculation of per-group statistics
+(mean, SD, CV) and comparison of singleton (single-sample) datasets against
+reference groups. Designed for exploratory analysis and hypothesis generation.
+}
+\details{
+The `SoloGEx` class replaces an ExpressionSet-like object with a lightweight
+list-based S4 implementation. Use the provided functions to:
+\enumerate{
+  \item Create a new object: \code{SoloGEx(expr, colData)}
+  \item Compute group statistics: \code{compute_group_stats()}
+  \item Analyze singleton samples: \code{analyze_singletons()}
+  \item Export combined results: \code{export_combined()} or \code{write_combined_file()}
+}
+}
+\section{Slots}{
+
+\describe{
+\item{\code{expr}}{Numeric matrix of expression values. Rows correspond to genes,
+columns correspond to samples.}
+
+\item{\code{colData}}{Data frame of sample metadata. Each row corresponds to a column
+in \code{expr}. Must include columns identifying biological groups if
+computing group statistics.}
+
+\item{\code{group_stats}}{Optional matrix of per-gene, per-group statistics computed
+by \code{\link{compute_group_stats}}. Columns are of the form
+\code{<GroupName>_mean}, \code{<GroupName>_sd}, \code{<GroupName>_cv}.}
+
+\item{\code{singleton_analysis}}{Optional list containing results of
+\code{\link{analyze_singletons}}, including:
+\itemize{
+  \item \code{z_scores} – absolute Z-scores per gene vs closest group
+  \item \code{closest_group} – reference group with minimum |Z| per gene
+  \item \code{overall_dev} – mean minimum Z per sample
+}}
+}}
+
+\examples{
+# Create mock expression dataset
+expr <- matrix(rnorm(12), nrow = 3, dimnames = list(paste0("Gene",1:3),
+                                                    paste0("S",1:4)))
+colData <- data.frame(SampleID = paste0("S",1:4),
+                      BiologicalGroup = c("A","A","B","B"))
+edat <- SoloGEx(expr, colData)
+
+# Compute group statistics
+edat <- compute_group_stats(edat, group_col = "BiologicalGroup")
+
 }

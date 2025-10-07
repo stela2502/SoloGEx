@@ -2,9 +2,12 @@
 % Please edit documentation in R/SoloGEx.R
 \name{export_combined}
 \alias{export_combined}
+\alias{export_combined,SoloGEx-method}
 \title{Export combined table from a SoloGEx object}
 \usage{
 export_combined(edat)
+
+\S4method{export_combined}{SoloGEx}(edat)
 }
 \arguments{
 \item{edat}{A \code{SoloGEx} S4 object. The object can have:
@@ -48,12 +51,16 @@ Interpretation for lab scientists:
   \item \code{overall_dev} indicates global deviation of a singleton sample.
 }
 }
+\section{Functions}{
+\itemize{
+\item \code{export_combined(SoloGEx)}: Method for SoloGEx objects
+
+}}
 \examples{
 # Assume 'single_edat' has singleton analysis and group stats computed
+\dontrun{
 combined_table <- export_combined(single_edat)
 head(combined_table)
-
-# Write to CSV
-write.csv(combined_table, "analysis_results.csv", row.names = TRUE)
+}
 
 }

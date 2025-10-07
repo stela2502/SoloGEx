@@ -2,9 +2,15 @@
 % Please edit documentation in R/SoloGEx.R
 \name{compute_group_stats}
 \alias{compute_group_stats}
+\alias{compute_group_stats,SoloGEx-method}
+\alias{analyze_singletons,SoloGEx,SoloGEx-method}
 \title{Compute per-gene, per-group statistics for a SoloGEx object}
 \usage{
 compute_group_stats(edat, group_col)
+
+\S4method{compute_group_stats}{SoloGEx}(edat, group_col)
+
+\S4method{analyze_singletons}{SoloGEx,SoloGEx}(single_edat, group_edat, group_col = NULL)
 }
 \arguments{
 \item{edat}{A \code{SoloGEx} S4 object containing the expression matrix
@@ -40,6 +46,13 @@ Interpretation:
         with caution in downstream analyses.}
 }
 }
+\section{Functions}{
+\itemize{
+\item \code{compute_group_stats(SoloGEx)}: Method for SoloGEx objects
+
+\item \code{analyze_singletons(single_edat = SoloGEx, group_edat = SoloGEx)}: Method for SoloGEx objects
+
+}}
 \examples{
 # Create a mock SoloGEx object
 expr <- matrix(rnorm(12), nrow = 3, dimnames = list(paste0("Gene",1:3),
@@ -47,7 +60,7 @@ expr <- matrix(rnorm(12), nrow = 3, dimnames = list(paste0("Gene",1:3),
 colData <- data.frame(SampleID = paste0("S",1:4),
                       BiologicalGroup = c("A","A","B","B"))
 edat <- SoloGEx(expr, colData)
-edat <- compute_group_stats(edat, group_col = "BiologicalGroup")
-head(edat@group_stats)
+group_stats <- compute_group_stats(edat, group_col = "BiologicalGroup")
+head(group_stats)
 
 }

@@ -1,44 +1,12 @@
-################################################################################
-# Minimal SoloGEx Framework
-# Author: Your Name
-# Purpose: 
-#   - Provide a minimal, self-contained framework to handle gene expression
-#     data and sample metadata.
-#   - Compute per-group statistics (mean, SD, CV) for a reference dataset.
-#   - Compare singleton (single-sample) datasets to reference groups.
-#   - Export combined results for lab scientists in a human-readable table.
-#
-# This script implements a lightweight version of an ExpressionSet-like class
-# using R lists. It includes three main functions:
-#   1) SoloGEx()       : Constructor for your expression dataset
-#   2) compute_group_stats()     : Computes mean, SD, CV per biological group
-#   3) analyze_singletons()      : Compares singletons to reference, calculates
-#                                  Z-scores and closest group
-#   4) export_combined()         : Generates one table with expression values,
-#                                  group statistics, and singleton analysis
-#
-# Dependencies: Base R only
-################################################################################
 
-################################################################################
-# 1) Constructor: SoloGEx
-# Arguments:
-#   - expr: gene expression matrix, rows = genes, columns = samples
-#   - colData: data.frame of sample metadata, rows = columns of expr
-# Returns:
-#   - a list containing:
-#       * expr       : expression matrix
-#       * colData    : sample metadata
-#       * group_stats: slot for storing per-group statistics (mean, SD, CV)
-#       * singleton_analysis: slot for storing singleton analysis results
-# Usage:
-#   ref_edat <- SoloGEx(expr = ref_expr, colData = ref_info)
-################################################################################
 
-# Helper type unions for optional slots
+#' @importFrom methods new
+#' @importFrom stats sd
+#' @importFrom utils write.table
+
+
 setClassUnion("matrixOrNULL", c("matrix", "NULL"))
 setClassUnion("listOrNULL", c("list", "NULL"))
-
 #' SoloGEx S4 Class for Gene Expression Analysis
 #'
 #' The `SoloGEx` class is a minimal framework for storing gene expression data
@@ -96,6 +64,32 @@ setClass(
 
 
 
+
+
+#' SoloGEx Constructor
+#'
+#' Create a `SoloGEx` object to store gene expression data and sample metadata.
+#'
+#' @param expr A numeric matrix of expression values (genes × samples).
+#' @param colData A data.frame of sample metadata; each row corresponds to a column in `expr`.
+#'
+#' @return A `SoloGEx` S4 object with slots:
+#'   \itemize{
+#'     \item \code{expr} — expression matrix
+#'     \item \code{colData} — sample metadata
+#'     \item \code{group_stats} — initialized as NULL
+#'     \item \code{singleton_analysis} — initialized as NULL
+#'   }
+#'
+#' @examples
+#' # Example expression matrix
+#' expr <- matrix(rnorm(12), nrow = 3, dimnames = list(paste0("Gene", 1:3),
+#'                                                     paste0("S", 1:4)))
+#' colData <- data.frame(SampleID = paste0("S", 1:4),
+#'                       BiologicalGroup = c("A","A","B","B"))
+#' edat <- SoloGEx(expr, colData)
+#'
+#' @export
 SoloGEx <- function(expr, colData) {
   if (!is.matrix(expr)) expr <- as.matrix(expr)
   if (nrow(colData) != ncol(expr)) {
@@ -117,6 +111,11 @@ SoloGEx <- function(expr, colData) {
     singleton_analysis = NULL)
 }
 
+setGeneric(
+  "check_genes_match",
+  function(obj1, obj2) standardGeneric("check_genes_match")
+  )
+
 #' Check gene consistency between two SoloGEx objects
 #'
 #' @param obj1 SoloGEx object (e.g., singletons)
@@ -128,6 +127,7 @@ setGeneric(
   function(obj1, obj2) standardGeneric("check_genes_match")
   )
 
+#' @describeIn check_genes_match Method for SoloGEx objects
 setMethod(
   "check_genes_match",
   signature(obj1 = "SoloGEx", obj2 = "SoloGEx"),
@@ -154,6 +154,10 @@ setMethod(
   }
 )
 
+setGeneric(
+  "enforce_gene_order",
+  function(target, reference) standardGeneric("enforce_gene_order")
+  )
 
 
 #' Reorder genes of target SoloGEx to match reference SoloGEx
@@ -167,6 +171,7 @@ setGeneric(
   function(target, reference) standardGeneric("enforce_gene_order")
   )
 
+#' @describeIn enforce_gene_order Method for SoloGEx objects
 setMethod(
   "enforce_gene_order",
   signature(target = "SoloGEx", reference = "SoloGEx"),
@@ -188,6 +193,8 @@ setMethod(
   return(target)
 }
 )
+
+
 #' Compute per-gene, per-group statistics for a SoloGEx object
 #'
 #' This function calculates the mean, standard deviation (SD), and
@@ -227,14 +234,15 @@ setMethod(
 #' colData <- data.frame(SampleID = paste0("S",1:4),
 #'                       BiologicalGroup = c("A","A","B","B"))
 #' edat <- SoloGEx(expr, colData)
-#' edat <- compute_group_stats(edat, group_col = "BiologicalGroup")
-#' head(edat@group_stats)
+#' group_stats <- compute_group_stats(edat, group_col = "BiologicalGroup")
+#' head(group_stats)
 #'
 #' @export
 setGeneric("compute_group_stats", function(edat, group_col) {
   standardGeneric("compute_group_stats")
   })
 
+#' @describeIn compute_group_stats Method for SoloGEx objects
 setMethod(
   "compute_group_stats",
   signature(edat = "SoloGEx"),
@@ -302,6 +310,8 @@ setMethod(
   return(stats)
 })
 
+
+
 #' Analyze singleton samples against reference group statistics
 #'
 #' This function compares singleton (1-sample) datasets to a reference
@@ -366,6 +376,8 @@ setGeneric("analyze_singletons", function(single_edat, group_edat, group_col) {
   standardGeneric("analyze_singletons")
   })
 
+
+#' @describeIn compute_group_stats Method for SoloGEx objects
 setMethod(
   "analyze_singletons",
   signature(single_edat = "SoloGEx", group_edat= "SoloGEx"), 
@@ -421,6 +433,8 @@ setMethod(
   return(single_edat)
 })
 
+
+
 #' Export combined table from a SoloGEx object
 #'
 #' Combines the expression matrix, group statistics, and singleton analysis
@@ -464,16 +478,17 @@ setMethod(
 #'
 #' @examples
 #' # Assume 'single_edat' has singleton analysis and group stats computed
+#' \dontrun{
 #' combined_table <- export_combined(single_edat)
 #' head(combined_table)
-#'
-#' # Write to CSV
-#' write.csv(combined_table, "analysis_results.csv", row.names = TRUE)
+#' }
 #'
 #' @export
 setGeneric("export_combined", function( edat ) {
   standardGeneric("export_combined")
   })
+
+#' @describeIn export_combined Method for SoloGEx objects
 setMethod(
   "export_combined",
   signature(edat = "SoloGEx"),
@@ -506,6 +521,8 @@ setMethod(
     return(df)
   }
   )
+
+
 #' Write combined SoloGEx results to a file
 #'
 #' Exports the combined results from a \code{SoloGEx} object to a file.
@@ -532,7 +549,9 @@ setMethod(
 #'
 #' @examples
 #' # Assume 'single_edat' has singleton analysis computed
+#' \dontrun{
 #' write_combined_file(single_edat, "singleton_results.csv", sep = ",", quote = FALSE)
+#' }
 #'
 #' @export
 setGeneric(
@@ -540,6 +559,7 @@ setGeneric(
   function(singleton, file, ...) standardGeneric("write_combined_file")
   )
 
+#' @describeIn write_combined_file Method for SoloGEx objects
 setMethod(
   "write_combined_file",
   signature(singleton = "SoloGEx"),
@@ -567,8 +587,10 @@ setMethod(
 # single_edat <- analyze_singletons(single_edat, ref_edat@group_stats)
 # 
 # # Export full combined table for lab scientists
+# \dontrun{
 # combined_table <- export_combined(single_edat)
-# write.csv(combined_table, "singleton_analysis_results.csv", row.names = TRUE)
+# head(combined_table)
+# }
 ################################################################################
 
 ################################################################################

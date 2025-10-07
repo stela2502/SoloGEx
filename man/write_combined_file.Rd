@@ -2,9 +2,12 @@
 % Please edit documentation in R/SoloGEx.R
 \name{write_combined_file}
 \alias{write_combined_file}
+\alias{write_combined_file,SoloGEx-method}
 \title{Write combined SoloGEx results to a file}
 \usage{
 write_combined_file(singleton, file, ...)
+
+\S4method{write_combined_file}{SoloGEx}(singleton, file, ...)
 }
 \arguments{
 \item{singleton}{A \code{SoloGEx} object with \code{singleton_analysis} slot filled.
@@ -33,8 +36,15 @@ If missing, it stops with an informative error. The resulting file contains:
   \item Singleton analysis results (Z-scores, closest group, overall deviation)
 }
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{write_combined_file(SoloGEx)}: Method for SoloGEx objects
+
+}}
 \examples{
 # Assume 'single_edat' has singleton analysis computed
+\dontrun{
 write_combined_file(single_edat, "singleton_results.csv", sep = ",", quote = FALSE)
+}
 
 }

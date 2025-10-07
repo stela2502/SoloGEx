@@ -2,9 +2,12 @@
 % Please edit documentation in R/SoloGEx.R
 \name{enforce_gene_order}
 \alias{enforce_gene_order}
+\alias{enforce_gene_order,SoloGEx,SoloGEx-method}
 \title{Reorder genes of target SoloGEx to match reference SoloGEx}
 \usage{
 enforce_gene_order(target, reference)
+
+\S4method{enforce_gene_order}{SoloGEx,SoloGEx}(target, reference)
 }
 \arguments{
 \item{target}{SoloGEx object to reorder}
@@ -17,3 +20,8 @@ target SoloGEx object with rows reordered to match reference
 \description{
 Reorder genes of target SoloGEx to match reference SoloGEx
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{enforce_gene_order(target = SoloGEx, reference = SoloGEx)}: Method for SoloGEx objects
+
+}}

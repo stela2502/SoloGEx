@@ -2,9 +2,12 @@
 % Please edit documentation in R/SoloGEx.R
 \name{check_genes_match}
 \alias{check_genes_match}
+\alias{check_genes_match,SoloGEx,SoloGEx-method}
 \title{Check gene consistency between two SoloGEx objects}
 \usage{
 check_genes_match(obj1, obj2)
+
+\S4method{check_genes_match}{SoloGEx,SoloGEx}(obj1, obj2)
 }
 \arguments{
 \item{obj1}{SoloGEx object (e.g., singletons)}
@@ -17,3 +20,8 @@ TRUE if genes match, stops with an informative error otherwise
 \description{
 Check gene consistency between two SoloGEx objects
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{check_genes_match(obj1 = SoloGEx, obj2 = SoloGEx)}: Method for SoloGEx objects
+
+}}

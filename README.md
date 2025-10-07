@@ -5,7 +5,7 @@ of single-sample (“solo”) gene expression data against reference datasets.
 
 ## Features
 
-- Wrap expression matrices and sample metadata into a `ExpressionDataSet` object
+- Wrap expression matrices and sample metadata into a `SoloGEx` object (expression and colData)
 - Compute per-group statistics (mean, SD, CV) for reference groups
 - Compare singleton samples to reference and calculate Z-scores
 - Identify closest baseline group per gene

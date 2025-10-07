@@ -23,7 +23,7 @@ install.packages("devtools")
 devtools::install("/path/to/SoloGEx")
 
 # or directly from github
-devtools::install_github("stela2502/SingleGEx")
+devtools::install_github("stela2502/SoloGEx")
 ```
 
 ## Quck Start

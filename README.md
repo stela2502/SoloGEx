@@ -37,18 +37,22 @@ ref_expr <- matrix(rnorm(10*4), nrow = 10)
 rownames(ref_expr) = paste(sep=".", "Gene", 1:10);
 ref_colData <- data.frame(SampleID = paste0("R", 1:4),
       BiologicalGroup = rep(c("A","B"), each = 2))
+
+## For a real dataset you should nortmalize the data!
 ref_edat <- SoloGEx(ref_expr, ref_colData)
   
 # Singleton
 singleton_expr <- matrix(rnorm(10*2), nrow = 10)
 rownames(singleton_expr) = paste(sep=".", "Gene", 1:10);
 singleton_colData <- data.frame(SampleID = paste0("S", 1:2))
+
+## For a real dataset you should nortmalize the data!
 singleton_edat <- SoloGEx(singleton_expr, singleton_colData)
-  
+
+# One stop create all the values in one go  
 singleton_edat <- analyze_singletons(singleton_edat, ref_edat, group_col="BiologicalGroup")
   
-# Export the results to a file:
-
+# Export the results + logFC to a file:
 write_combined_file ( singleton_edat, "your_file.csv")
 
 # Create singleton dataset

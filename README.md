@@ -59,7 +59,7 @@ singleton_edat = compute_corr_to_reference( singleton_edat, ref_edat )
 
 # write the correlation heatmap to SVG
 svg("correlation_heatmap.svg", width = 6, height = 6)  # open SVG device
-plot_corr_heatmap(singleton_edat)                      # generate the plot
+plot_corr(singleton_edat)                      # generate the plot
 dev.off()                                              # close device and save file
 
 # Create singleton dataset

@@ -31,9 +31,9 @@ and standard \code{write.table()}.
 Before writing, the function checks that the \code{singleton_analysis} slot exists.
 If missing, it stops with an informative error. The resulting file contains:
 \itemize{
-  \item Expression values for each gene and sample
-  \item Group statistics (mean, SD, CV) if available
-  \item Singleton analysis results (Z-scores, closest group, overall deviation)
+  \item{Expression values for each gene and sample}
+  \item{Group statistics (mean, SD, CV) if available}
+  \item{Singleton analysis results (Z-scores, closest group, overall deviation)}
 }
 }
 \section{Methods (by class)}{

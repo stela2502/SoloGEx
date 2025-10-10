@@ -2,9 +2,12 @@
 % Please edit documentation in R/SoloGEx.R
 \name{analyze_singletons}
 \alias{analyze_singletons}
+\alias{analyze_singletons,SoloGEx,SoloGEx-method}
 \title{Analyze singleton samples against reference group statistics}
 \usage{
 analyze_singletons(single_edat, group_edat, group_col)
+
+\S4method{analyze_singletons}{SoloGEx,SoloGEx}(single_edat, group_edat, group_col = NULL)
 }
 \arguments{
 \item{single_edat}{A \code{SoloGEx} object containing singleton samples.
@@ -19,7 +22,7 @@ that defines biological groups.}
 }
 \value{
 A \code{SoloGEx} object with the \code{singleton_analysis} slot filled:
-  \itemize{
+  \describe{
     \item{\code{z_scores}}{Absolute Z-score of each gene vs closest group.}
     \item{\code{closest_group}}{Name of the reference group with minimum |Z| per gene.}
     \item{\code{overall_dev}}{Mean minimum Z-score per sample, indicating global deviation.}
@@ -35,14 +38,14 @@ overall deviation per sample.
 \details{
 Steps performed internally:
 \enumerate{
-  \item Check that genes in \code{single_edat} and \code{group_edat} match.
-  \item Compute group statistics for \code{group_edat} if missing.
-  \item For each gene in each singleton sample:
+  \item{Check that genes in \code{single_edat} and \code{group_edat} match.}
+  \item{Compute group statistics for \code{group_edat} if missing.}
+  \item{For each gene in each singleton sample:}
     \itemize{
-      \item Compute Z-score vs mean of each reference group.
-      \item Identify group with minimum absolute Z-score.
+      \item{Compute Z-score vs mean of each reference group.}
+      \item{Identify group with minimum absolute Z-score.}
     }
-  \item Compute overall deviation per sample as the mean of min-Z across genes.
+  \item{Compute overall deviation per sample as the mean of min-Z across genes.}
 }
 
 Interpretation for lab scientists:
@@ -52,6 +55,11 @@ Interpretation for lab scientists:
   \item{Closest group per gene can guide hypotheses about which baseline the singleton most resembles.}
 }
 }
+\section{Functions}{
+\itemize{
+\item \code{analyze_singletons(single_edat = SoloGEx, group_edat = SoloGEx)}: Method for SoloGEx objects
+
+}}
 \examples{
 # Create mock reference dataset
 ref_expr <- matrix(rnorm(12), nrow=3, dimnames=list(paste0("Gene",1:3), paste0("R",1:4)))

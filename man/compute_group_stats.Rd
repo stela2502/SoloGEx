@@ -3,14 +3,11 @@
 \name{compute_group_stats}
 \alias{compute_group_stats}
 \alias{compute_group_stats,SoloGEx-method}
-\alias{analyze_singletons,SoloGEx,SoloGEx-method}
 \title{Compute per-gene, per-group statistics for a SoloGEx object}
 \usage{
 compute_group_stats(edat, group_col)
 
 \S4method{compute_group_stats}{SoloGEx}(edat, group_col)
-
-\S4method{analyze_singletons}{SoloGEx,SoloGEx}(single_edat, group_edat, group_col = NULL)
 }
 \arguments{
 \item{edat}{A \code{SoloGEx} S4 object containing the expression matrix
@@ -33,14 +30,14 @@ replicates within each biological group of a reference dataset.
 \details{
 Each row corresponds to a gene.  
 For each group:
-\itemize{
+\describe{
   \item{\code{<GroupName>_mean}}{ — mean expression across replicates}
   \item{\code{<GroupName>_sd}}{ — standard deviation across replicates}
   \item{\code{<GroupName>_cv}}{ — coefficient of variation (SD / mean)}
 }
 
 Interpretation:
-\itemize{
+\describe{
   \item{Low CV indicates a gene is stable across replicates in this group.}
   \item{High CV indicates a gene is noisy; such genes should be interpreted
         with caution in downstream analyses.}
@@ -49,8 +46,6 @@ Interpretation:
 \section{Functions}{
 \itemize{
 \item \code{compute_group_stats(SoloGEx)}: Method for SoloGEx objects
-
-\item \code{analyze_singletons(single_edat = SoloGEx, group_edat = SoloGEx)}: Method for SoloGEx objects
 
 }}
 \examples{

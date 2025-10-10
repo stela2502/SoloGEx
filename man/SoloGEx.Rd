@@ -14,10 +14,10 @@ SoloGEx(expr, colData)
 \value{
 A `SoloGEx` S4 object with slots:
   \itemize{
-    \item \code{expr} — expression matrix
-    \item \code{colData} — sample metadata
-    \item \code{group_stats} — initialized as NULL
-    \item \code{singleton_analysis} — initialized as NULL
+    \item{\code{expr} — expression matrix}
+    \item{\code{colData} — sample metadata}
+    \item{\code{group_stats} — initialized as NULL}
+    \item{\code{singleton_analysis} — initialized as NULL}
   }
 }
 \description{

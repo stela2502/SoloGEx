@@ -3,7 +3,10 @@
 #' @importFrom methods new
 #' @importFrom stats sd
 #' @importFrom utils write.table
-
+#' @importFrom corrplot corrplot
+#' @importFrom viridis viridis
+#' @importFrom stats cor
+#' @importFrom grDevices heat.colors
 
 setClassUnion("matrixOrNULL", c("matrix", "NULL"))
 setClassUnion("listOrNULL", c("list", "NULL"))
@@ -25,19 +28,19 @@ setClassUnion("listOrNULL", c("list", "NULL"))
 #' @slot singleton_analysis Optional list containing results of
 #'   \code{\link{analyze_singletons}}, including:
 #'   \itemize{
-#'     \item \code{z_scores} – absolute Z-scores per gene vs closest group
-#'     \item \code{closest_group} – reference group with minimum |Z| per gene
-#'     \item \code{overall_dev} – mean minimum Z per sample
+#'     \item{\code{z_scores} – absolute Z-scores per gene vs closest group}
+#'     \item{\code{closest_group} – reference group with minimum |Z| per gene}
+#'     \item{\code{overall_dev} – mean minimum Z per sample}
 #'   }
 #'
 #' @details
 #' The `SoloGEx` class replaces an ExpressionSet-like object with a lightweight
 #' list-based S4 implementation. Use the provided functions to:
 #' \enumerate{
-#'   \item Create a new object: \code{SoloGEx(expr, colData)}
-#'   \item Compute group statistics: \code{compute_group_stats()}
-#'   \item Analyze singleton samples: \code{analyze_singletons()}
-#'   \item Export combined results: \code{export_combined()} or \code{write_combined_file()}
+#'   \item{Create a new object: \code{SoloGEx(expr, colData)}}
+#'   \item{Compute group statistics: \code{compute_group_stats()}}
+#'   \item{Analyze singleton samples: \code{analyze_singletons()}}
+#'   \item{Export combined results: \code{export_combined()} or \code{write_combined_file()}}
 #' }
 #'
 #' @examples
@@ -75,10 +78,10 @@ setClass(
 #'
 #' @return A `SoloGEx` S4 object with slots:
 #'   \itemize{
-#'     \item \code{expr} — expression matrix
-#'     \item \code{colData} — sample metadata
-#'     \item \code{group_stats} — initialized as NULL
-#'     \item \code{singleton_analysis} — initialized as NULL
+#'     \item{\code{expr} — expression matrix}
+#'     \item{\code{colData} — sample metadata}
+#'     \item{\code{group_stats} — initialized as NULL}
+#'     \item{\code{singleton_analysis} — initialized as NULL}
 #'   }
 #'
 #' @examples
@@ -214,14 +217,14 @@ setMethod(
 #' @details
 #' Each row corresponds to a gene.  
 #' For each group:
-#' \itemize{
+#' \describe{
 #'   \item{\code{<GroupName>_mean}}{ — mean expression across replicates}
 #'   \item{\code{<GroupName>_sd}}{ — standard deviation across replicates}
 #'   \item{\code{<GroupName>_cv}}{ — coefficient of variation (SD / mean)}
 #' }
 #' 
 #' Interpretation:
-#' \itemize{
+#' \describe{
 #'   \item{Low CV indicates a gene is stable across replicates in this group.}
 #'   \item{High CV indicates a gene is noisy; such genes should be interpreted
 #'         with caution in downstream analyses.}
@@ -329,7 +332,7 @@ setMethod(
 #'   that defines biological groups.
 #'
 #' @return A \code{SoloGEx} object with the \code{singleton_analysis} slot filled:
-#'   \itemize{
+#'   \describe{
 #'     \item{\code{z_scores}}{Absolute Z-score of each gene vs closest group.}
 #'     \item{\code{closest_group}}{Name of the reference group with minimum |Z| per gene.}
 #'     \item{\code{overall_dev}}{Mean minimum Z-score per sample, indicating global deviation.}
@@ -338,14 +341,14 @@ setMethod(
 #' @details
 #' Steps performed internally:
 #' \enumerate{
-#'   \item Check that genes in \code{single_edat} and \code{group_edat} match.
-#'   \item Compute group statistics for \code{group_edat} if missing.
-#'   \item For each gene in each singleton sample:
+#'   \item{Check that genes in \code{single_edat} and \code{group_edat} match.}
+#'   \item{Compute group statistics for \code{group_edat} if missing.}
+#'   \item{For each gene in each singleton sample:}
 #'     \itemize{
-#'       \item Compute Z-score vs mean of each reference group.
-#'       \item Identify group with minimum absolute Z-score.
+#'       \item{Compute Z-score vs mean of each reference group.}
+#'       \item{Identify group with minimum absolute Z-score.}
 #'     }
-#'   \item Compute overall deviation per sample as the mean of min-Z across genes.
+#'   \item{Compute overall deviation per sample as the mean of min-Z across genes.}
 #' }
 #'
 #' Interpretation for lab scientists:
@@ -377,7 +380,7 @@ setGeneric("analyze_singletons", function(single_edat, group_edat, group_col) {
   })
 
 
-#' @describeIn compute_group_stats Method for SoloGEx objects
+#' @describeIn analyze_singletons Method for SoloGEx objects
 setMethod(
   "analyze_singletons",
   signature(single_edat = "SoloGEx", group_edat= "SoloGEx"), 
@@ -450,7 +453,7 @@ setMethod(
 #' downstream export (e.g., CSV) and interpretation by lab scientists.
 #'
 #' @param edat A \code{SoloGEx} S4 object. The object can have:
-#'   \itemize{
+#'   \describe{
 #'     \item{\code{@expr}}{ — expression matrix (genes x samples)}
 #'     \item{\code{@group_stats}}{ — optional, per-group statistics (mean, SD, CV)}
 #'     \item{\code{@singleton_analysis}}{ — optional, singleton analysis
@@ -467,21 +470,21 @@ setMethod(
 #' @details
 #' The resulting table contains all genes (rows) and the following columns:
 #' \enumerate{
-#'   \item Expression values for each sample
-#'   \item Group statistics for each reference group (columns named <Group>_mean, <Group>_sd, <Group>_cv)
-#'   \item Singleton analysis results:
-#'     \itemize{
-#'       \item Z-scores (columns starting with "Z_")
-#'       \item \code{closest_group} indicating the most similar reference group per gene
-#'       \item \code{overall_dev} summarizing mean deviation per singleton sample
-#'     }
+#'   \item{Expression values for each sample}
+#'   \item{Group statistics for each reference group (columns named <Group>_mean, <Group>_sd, <Group>_cv)}
+#'   \item{Singleton analysis results:
+#'     \describe{
+#'       \item{Z-scores}](columns starting with "Z_")}
+#'       \item{\code{closest_group}}{indicating the most similar reference group per gene}
+#'       \item{\code{overall_dev}}{summarizing mean deviation per singleton sample}
+#'     } }
 #' }
 #'
 #' Interpretation for lab scientists:
 #' \itemize{
-#'   \item High Z-scores indicate genes unusually different from reference groups.
-#'   \item \code{closest_group} helps to hypothesize which baseline a singleton resembles.
-#'   \item \code{overall_dev} indicates global deviation of a singleton sample.
+#'   \item{High Z-scores indicate genes unusually different from reference groups.}
+#'   \item{\code{closest_group} helps to hypothesize which baseline a singleton resembles.}
+#'   \item{\code{overall_dev} indicates global deviation of a singleton sample.}
 #' }
 #'
 #' @examples
@@ -554,9 +557,9 @@ setMethod(
 #' Before writing, the function checks that the \code{singleton_analysis} slot exists.
 #' If missing, it stops with an informative error. The resulting file contains:
 #' \itemize{
-#'   \item Expression values for each gene and sample
-#'   \item Group statistics (mean, SD, CV) if available
-#'   \item Singleton analysis results (Z-scores, closest group, overall deviation)
+#'   \item{Expression values for each gene and sample}
+#'   \item{Group statistics (mean, SD, CV) if available}
+#'   \item{Singleton analysis results (Z-scores, closest group, overall deviation)}
 #' }
 #'
 #' @examples
@@ -622,6 +625,113 @@ compute_fc_pairwise <- function(single_edat) {
   fc_df <- as.data.frame(fc_list, row.names = rownames(single_expr))
   return(fc_df)
 }
+
+
+#' Compute correlation of singleton samples to reference samples (S4 method)
+#'
+#' Calculates correlation between each singleton sample and all reference samples.
+#'
+#' @param singleton SoloGEx object containing singleton expression data
+#' @param reference SoloGEx object containing reference expression data
+#' @param method Correlation method: "pearson" or "spearman" (default: "pearson")
+#' 
+#' @return SoloGEx object with correlations stored in @singleton_analysis$correlation_to_reference
+#' @export
+setGeneric(
+  "compute_corr_to_reference",
+  function(singleton, reference, method = "pearson") standardGeneric("compute_corr_to_reference")
+)
+
+#' @describeIn compute_corr_to_reference Method for SoloGEx objects
+setMethod(
+  "compute_corr_to_reference",
+  signature(singleton = "SoloGEx", reference = "SoloGEx"),
+  function(singleton, reference, method = "pearson") {
+
+    # Check that singleton and reference have expression matrices
+    if (is.null(singleton@expr) || ncol(singleton@expr) == 0 || nrow(singleton@expr) == 0) {
+      stop("ERROR: Singleton SoloGEx object has no expression data.")
+    }
+    if (is.null(reference@expr) || ncol(reference@expr) == 0 || nrow(reference@expr) == 0) {
+      stop("ERROR: Reference SoloGEx object has no expression data.")
+    }
+
+    # Ensure singleton_analysis exists
+    if (is.null(singleton@singleton_analysis)) {
+      stop("ERROR: singleton_analysis slot is empty. Run analyze_singletons() first.")
+    }
+
+    # Ensure gene sets match
+    check_genes_match(singleton, reference)
+    singleton <- enforce_gene_order(singleton, reference)
+    
+    # Compute correlation matrix
+    single_expr <- singleton@expr
+    ref_expr <- reference@expr
+    cor_mat <- matrix(NA, nrow = ncol(single_expr), ncol = ncol(ref_expr),
+                      dimnames = list(colnames(single_expr), colnames(ref_expr)))
+    
+    for (s in seq_len(ncol(single_expr))) {
+      for (r in seq_len(ncol(ref_expr))) {
+        cor_mat[s, r] <- cor(single_expr[, s], ref_expr[, r], method = method, use = "pairwise.complete.obs")
+      }
+    }
+    
+    # Store correlations in singleton_analysis
+    singleton@singleton_analysis$correlation_to_reference <- cor_mat
+    return(singleton)
+  }
+)
+
+#' Plot correlation of singleton samples to reference samples using corrplot
+#'
+#' @param singleton SoloGEx object with @singleton_analysis$correlation_to_reference
+#' @param method Plot method for corrplot: "circle", "color", or "number" (default: "circle")
+#' @param title Plot title (default: "Singleton vs Reference Correlation")
+#' @param ... Additional arguments passed to corrplot
+#' @export
+setGeneric(
+  "plot_corr_heatmap",
+  function(singleton, method = "circle", title = "Singleton vs Reference Correlation", ...) 
+    standardGeneric("plot_corr_heatmap")
+)
+
+#' @describeIn plot_corr_heatmap Method for SoloGEx objects
+setMethod(
+  "plot_corr_heatmap",
+  signature(singleton = "SoloGEx"),
+  function(singleton, method = "circle", title = "Singleton vs Reference Correlation", ...) {
+    # Check that correlation matrix exists
+    if (is.null(singleton@singleton_analysis$correlation_to_reference)) {
+      stop("ERROR: correlation_to_reference not found. Run compute_corr_to_reference() first.")
+    }
+    
+    cor_mat <- singleton@singleton_analysis$correlation_to_reference
+    
+    # Ensure corrplot package is available
+    if (!requireNamespace("corrplot", quietly = TRUE)) {
+      stop("The 'corrplot' package is required. Install with install.packages('corrplot').")
+    }
+    
+    # Set color palette: high correlation dark, low correlation light
+    if (!requireNamespace("viridis", quietly = TRUE)) {
+      colors <- heat.colors(100)
+    } else {
+      colors <- rev(viridis::viridis(100))
+    }
+    
+    # Create the plot
+    corrplot::corrplot(cor_mat,
+                       method = method,
+                       col = colors,
+                       tl.col = "black",
+                       addCoef.col = if (method == "number") "white" else NULL,
+                       number.cex = 0.8,
+                       mar = c(0,0,1,0),
+                       title = title,
+                       ...)
+  }
+)
 
 ################################################################################
 # USAGE EXAMPLE

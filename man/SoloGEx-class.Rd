@@ -14,10 +14,10 @@ reference groups. Designed for exploratory analysis and hypothesis generation.
 The `SoloGEx` class replaces an ExpressionSet-like object with a lightweight
 list-based S4 implementation. Use the provided functions to:
 \enumerate{
-  \item Create a new object: \code{SoloGEx(expr, colData)}
-  \item Compute group statistics: \code{compute_group_stats()}
-  \item Analyze singleton samples: \code{analyze_singletons()}
-  \item Export combined results: \code{export_combined()} or \code{write_combined_file()}
+  \item{Create a new object: \code{SoloGEx(expr, colData)}}
+  \item{Compute group statistics: \code{compute_group_stats()}}
+  \item{Analyze singleton samples: \code{analyze_singletons()}}
+  \item{Export combined results: \code{export_combined()} or \code{write_combined_file()}}
 }
 }
 \section{Slots}{
@@ -37,9 +37,9 @@ by \code{\link{compute_group_stats}}. Columns are of the form
 \item{\code{singleton_analysis}}{Optional list containing results of
 \code{\link{analyze_singletons}}, including:
 \itemize{
-  \item \code{z_scores} – absolute Z-scores per gene vs closest group
-  \item \code{closest_group} – reference group with minimum |Z| per gene
-  \item \code{overall_dev} – mean minimum Z per sample
+  \item{\code{z_scores} – absolute Z-scores per gene vs closest group}
+  \item{\code{closest_group} – reference group with minimum |Z| per gene}
+  \item{\code{overall_dev} – mean minimum Z per sample}
 }}
 }}
 

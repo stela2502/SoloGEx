@@ -472,12 +472,12 @@ setMethod(
 #' \enumerate{
 #'   \item{Expression values for each sample}
 #'   \item{Group statistics for each reference group (columns named <Group>_mean, <Group>_sd, <Group>_cv)}
-#'   \item{Singleton analysis results:
+#'   \item{Singleton analysis results:}
 #'     \describe{
-#'       \item{Z-scores}](columns starting with "Z_")}
+#'       \item{Z-scores}{(columns starting with "Z_")}
 #'       \item{\code{closest_group}}{indicating the most similar reference group per gene}
 #'       \item{\code{overall_dev}}{summarizing mean deviation per singleton sample}
-#'     } }
+#'     } 
 #' }
 #'
 #' Interpretation for lab scientists:
@@ -691,14 +691,14 @@ setMethod(
 #' @param ... Additional arguments passed to corrplot
 #' @export
 setGeneric(
-  "plot_corr_heatmap",
+  "plot_corr",
   function(singleton, method = "circle", title = "Singleton vs Reference Correlation", ...) 
-    standardGeneric("plot_corr_heatmap")
+    standardGeneric("plot_corr")
 )
 
-#' @describeIn plot_corr_heatmap Method for SoloGEx objects
+#' @describeIn plot_corr Method for SoloGEx objects
 setMethod(
-  "plot_corr_heatmap",
+  "plot_corr",
   signature(singleton = "SoloGEx"),
   function(singleton, method = "circle", title = "Singleton vs Reference Correlation", ...) {
     # Check that correlation matrix exists
@@ -706,7 +706,7 @@ setMethod(
       stop("ERROR: correlation_to_reference not found. Run compute_corr_to_reference() first.")
     }
     
-    cor_mat <- singleton@singleton_analysis$correlation_to_reference
+    corr_mat <- singleton@singleton_analysis$correlation_to_reference
     
     # Ensure corrplot package is available
     if (!requireNamespace("corrplot", quietly = TRUE)) {
@@ -721,15 +721,18 @@ setMethod(
     }
     
     # Create the plot
-    corrplot::corrplot(cor_mat,
-                       method = method,
-                       col = colors,
-                       tl.col = "black",
-                       addCoef.col = if (method == "number") "white" else NULL,
-                       number.cex = 0.8,
-                       mar = c(0,0,1,0),
-                       title = title,
-                       ...)
+    corrplot::corrplot(corr_mat,
+           method = method,
+           col = colors,
+           tl.col = "black",
+           addCoef.col = if (method == "number") "white" else NULL,
+           col.lim = c(min(corr_mat, na.rm = TRUE), max(corr_mat, na.rm = TRUE)),
+           tl.cex = 0.8,
+           number.cex = 0.8,
+           mar = c(0,0,1,0),
+           title = title,
+           is.corr = FALSE,
+           ...)
   }
 )
 

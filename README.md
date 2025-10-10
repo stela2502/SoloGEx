@@ -55,6 +55,13 @@ singleton_edat <- analyze_singletons(singleton_edat, ref_edat, group_col="Biolog
 # Export the results + logFC to a file:
 write_combined_file ( singleton_edat, "your_file.csv")
 
+singleton_edat = compute_corr_to_reference( singleton_edat, ref_edat )
+
+# write the correlation heatmap to SVG
+svg("correlation_heatmap.svg", width = 6, height = 6)  # open SVG device
+plot_corr_heatmap(singleton_edat)                      # generate the plot
+dev.off()                                              # close device and save file
+
 # Create singleton dataset
 singleton_expr
 ```

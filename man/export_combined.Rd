@@ -32,7 +32,24 @@ from a \code{SoloGEx} object into a single \code{data.frame} suitable for
 downstream export (e.g., CSV) and interpretation by lab scientists.
 }
 \details{
+The resulting table contains all genes (rows) and the following columns:
+\enumerate{
+  \item{Expression values for each sample}
+  \item{Group statistics for each reference group (columns named <Group>_mean, <Group>_sd, <Group>_cv)}
+  \item{Singleton analysis results:}
+    \describe{
+      \item{Z-scores}{(columns starting with "Z_")}
+      \item{\code{closest_group}}{indicating the most similar reference group per gene}
+      \item{\code{overall_dev}}{summarizing mean deviation per singleton sample}
+    } 
+}
 
+Interpretation for lab scientists:
+\itemize{
+  \item{High Z-scores indicate genes unusually different from reference groups.}
+  \item{\code{closest_group} helps to hypothesize which baseline a singleton resembles.}
+  \item{\code{overall_dev} indicates global deviation of a singleton sample.}
+}
 }
 \section{Functions}{
 \itemize{
